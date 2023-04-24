@@ -40,7 +40,7 @@ func Endpoint(value interface{}) EndpointModel {
 				CreatedAt: errorMap["createdAt"].(string),
 				Code:      errorMap["code"].(string),
 				Path:      errorMap["path"].(string),
-				Messages:  errorMap["messages"].([]string),
+				Messages:  []string{fmt.Sprintf("%v", errorMap["messages"])},
 				Module:    errorMap["module"].(string),
 				Variables: errorMap["variables"],
 			}
