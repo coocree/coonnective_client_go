@@ -1,8 +1,8 @@
 package main
 
 import (
-	"coonnective_client_go/api"
 	"fmt"
+	"github.com/coocree/coonnective_client_go/api"
 )
 
 func EventReset() api.ResponseModel {

@@ -1,4 +1,4 @@
-module coonnective_client_go
+module github.com/coocree/coonnective_client_go
 
 go 1.19
 
