@@ -1,14 +1,16 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
-	"time"
 )
 
 type ResponseModel struct {
 	Success bool
 	Errors  []ErrorModel
 	Data    interface{}
+	body    []byte
+	model   interface{}
 }
 
 func Response(success bool, errors []ErrorModel, data interface{}) ResponseModel {
@@ -35,7 +37,7 @@ func (r ResponseModel) ResultError(endpoint string) interface{} {
 	return nil
 }
 
-func (r ResponseModel) PageInfo(endpoint string) interface{} {
+func (r ResponseModel) PageInfo(endpoint string) any {
 	if r.Data != nil {
 		response := r.Data.(map[string]interface{})
 		if result, ok := response[endpoint]; ok {
@@ -45,7 +47,7 @@ func (r ResponseModel) PageInfo(endpoint string) interface{} {
 	return nil
 }
 
-func (r ResponseModel) Endpoint(name string) EndpointModel {
+/*func (r ResponseModel) EndpointX(name string) EndpointModel {
 	if r.Data != nil {
 		response := r.Data.(map[string]interface{})
 		if endpoint, ok := response[name]; ok {
@@ -60,8 +62,17 @@ func (r ResponseModel) Endpoint(name string) EndpointModel {
 	//TODO: throw exception
 	fmt.Println(apiError.ToString())
 	return EndpointModel{}
-}
+}*/
 
+func (r ResponseModel) Endpoint() interface{} {
+	var response = r.model
+	errJson := json.Unmarshal(r.body, &response)
+	if errJson != nil {
+		fmt.Println("errJson: ", errJson)
+	}
+
+	return response
+}
 func (r ResponseModel) IsValid() bool {
 	return r.Success && len(r.Errors) == 0
 }

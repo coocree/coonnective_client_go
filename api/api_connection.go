@@ -47,7 +47,7 @@ func Connection(token string, serverUri string) (*ConnectionModel, error) {
 	}, nil
 }
 
-func (c *ConnectionModel) executeRequest(query string, variables map[string]interface{}) (map[string]interface{}, error) {
+func (c *ConnectionModel) executeRequest(query string, variables map[string]interface{}) (map[string]interface{}, *[]byte, error) {
 	c.ServerUri = "http://localhost:4600/api-connect"
 
 	requestBody, err := json.Marshal(map[string]interface{}{
@@ -56,12 +56,12 @@ func (c *ConnectionModel) executeRequest(query string, variables map[string]inte
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	req, err := http.NewRequest("POST", c.ServerUri, bytes.NewBuffer(requestBody))
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -72,13 +72,13 @@ func (c *ConnectionModel) executeRequest(query string, variables map[string]inte
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	//fmt.Printf("Response body: %s\n", body, c.ServerUri)
@@ -87,17 +87,17 @@ func (c *ConnectionModel) executeRequest(query string, variables map[string]inte
 	var response map[string]interface{}
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return response, nil
+	return response, &body, nil
 }
 
 func (c *ConnectionModel) Query(params string, variables map[string]interface{}) ResponseModel {
 	apiParams := Params(params)
 	fmt.Println("apiParams: ", apiParams.ToString())
 
-	response, err := c.executeRequest(params, variables)
+	response, body, err := c.executeRequest(params, variables)
 	if err != nil {
 		apiError := ApiError([]string{err.Error()},
 			"Connection", "Query", "GRAPHQL_QUERY_EXECUTE_FAILED", time.Now(), variables)
@@ -120,12 +120,14 @@ func (c *ConnectionModel) Query(params string, variables map[string]interface{})
 		return ResponseModel{
 			Success: true,
 			Data:    response["data"].(map[string]interface{}),
+			body:    *body,
 		}
 	}
 }
 
 func (c *ConnectionModel) Mutation(params string, variables map[string]interface{}) ResponseModel {
-	response, err := c.executeRequest(params, variables)
+
+	response, body, err := c.executeRequest(params, variables)
 	if err != nil {
 		apiError := ApiError([]string{err.Error()},
 			"Connection", "Mutation", "GRAPHQL_MUTATE_EXECUTE_FAILED", time.Now(), variables)
@@ -148,6 +150,7 @@ func (c *ConnectionModel) Mutation(params string, variables map[string]interface
 		return ResponseModel{
 			Success: true,
 			Data:    response["data"].(map[string]interface{}),
+			body:    *body,
 		}
 	}
 }

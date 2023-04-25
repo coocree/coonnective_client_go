@@ -3,11 +3,26 @@
 O coonnective_client_go é um pacote de conexão GraphQL desenvolvido em GO, que permite a comunicação com um servidor GraphQL para enviar e receber dados. Ele é utilizado para facilitar o processo de comunicação entre o cliente e o servidor, além de garantir que as respostas recebidas sejam tratadas de forma adequada.
 
 ```dart
+type EventResetResponse struct {
+	Data struct {
+		DooSimucCreate struct {
+			Result struct {
+				IdSimuc int32
+			}
+			Error       api.ErrorModel
+			ElapsedTime string
+			Success     bool
+		}
+	}
+}
+
 func EventReset() api.ResponseModel {
-	variables := map[string]interface{}{}
+	variables := map[string]interface{}{
+		"idEvent": "123",
+	}
 	graphQL := `
-mutation EventReset {
-	EventReset(filter: {idEvent: "123"}) {
+mutation EventReset(input: EventResetInput!) {
+	EventReset(filter: $input) {
 		result {
 			idEvent
 			status
@@ -25,7 +40,7 @@ mutation EventReset {
 	}
 }
 `
-	return api.Dao(graphQL, variables)
+	return api.Dao(graphQL, variables, &EventResetResponse{})
 }
 ```
 No código apresentado, temos a função EventReset() que realiza uma mutação no servidor GraphQL. O objetivo dessa mutação é resetar um evento identificado pelo ID "123". Para isso, a função define uma variável vazia e uma string contendo a query GraphQL a ser executada. A query é definida dentro da variável "graphQL", que contém o código GraphQL necessário para a execução da mutação.
@@ -40,12 +55,14 @@ func main() {
 	if !apiResponse.IsValid() {
 		apiResponse.ThrowException()
 	}
-	apiEndpoint := apiResponse.Endpoint("EventReset")
-	if !apiEndpoint.IsValid() {
-		apiEndpoint.ThrowException()
+	apiEndpoint := apiResponse.Endpoint().(*EventResetResponse)
+	dooSimucCreate := apiEndpoint.Data.DooSimucCreate
+
+	if !dooSimucCreate.Success {
+		fmt.Println(dooSimucCreate.Error.Messages)
 	}
 
-	fmt.Println(apiEndpoint.Result)
+	fmt.Println(dooSimucCreate.Result)
 }
 ```
 Após a definição da query, a função chama a função "api.Dao()" que é responsável por executar a query. Essa função recebe a query definida anteriormente e as variáveis definidas no início da função. Ela retorna um objeto do tipo "api.ResponseModel" que contém a resposta recebida do servidor GraphQL.

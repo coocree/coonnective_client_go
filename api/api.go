@@ -2,7 +2,7 @@ package api
 
 import "strings"
 
-func Dao(graphQL string, variables map[string]interface{}) ResponseModel {
+func Dao(graphQL string, variables map[string]interface{}, model interface{}) ResponseModel {
 	apiParams := Params(graphQL)
 	if errParams := apiParams.IsValid(); errParams != nil {
 		return ResponseModel{
@@ -18,7 +18,11 @@ func Dao(graphQL string, variables map[string]interface{}) ResponseModel {
 	}
 
 	if strings.ToLower(apiParams.Module) == "query" {
-		return apiConnect.Query(graphQL, variables)
+		responseModel := apiConnect.Query(graphQL, variables)
+		responseModel.model = model
+		return responseModel
 	}
-	return apiConnect.Mutation(graphQL, variables)
+	responseModel := apiConnect.Mutation(graphQL, variables)
+	responseModel.model = model
+	return responseModel
 }

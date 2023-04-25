@@ -5,11 +5,26 @@ import (
 	"github.com/coocree/coonnective_client_go/api"
 )
 
+type EventResetResponse struct {
+	Data struct {
+		DooSimucCreate struct {
+			Result struct {
+				IdSimuc int32
+			}
+			Error       api.ErrorModel
+			ElapsedTime string
+			Success     bool
+		}
+	}
+}
+
 func EventReset() api.ResponseModel {
-	variables := map[string]interface{}{}
+	variables := map[string]interface{}{
+		"idEvent": "123",
+	}
 	graphQL := `
-mutation EventReset {
-	EventReset(filter: {idEvent: "123"}) {
+mutation EventReset(input: EventResetInput!) {
+	EventReset(filter: $input) {
 		result {
 			idEvent
 			status
@@ -27,7 +42,7 @@ mutation EventReset {
 	}
 }
 `
-	return api.Dao(graphQL, variables)
+	return api.Dao(graphQL, variables, &EventResetResponse{})
 }
 
 func main() {
@@ -39,10 +54,12 @@ func main() {
 	if !apiResponse.IsValid() {
 		apiResponse.ThrowException()
 	}
-	apiEndpoint := apiResponse.Endpoint("EventReset")
-	if !apiEndpoint.IsValid() {
-		apiEndpoint.ThrowException()
+	apiEndpoint := apiResponse.Endpoint().(*EventResetResponse)
+	dooSimucCreate := apiEndpoint.Data.DooSimucCreate
+
+	if !dooSimucCreate.Success {
+		fmt.Println(dooSimucCreate.Error.Messages)
 	}
 
-	fmt.Println(apiEndpoint.Result)
+	fmt.Println(dooSimucCreate.Result)
 }

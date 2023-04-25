@@ -8,3 +8,6 @@
 
 ## 1.0.2
 * Corrigido retorno da mensagem de erro em api_enpoint
+
+## 1.0.3
+* Corrigido conversaõ de tipo int32 / int64
