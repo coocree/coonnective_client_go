@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 )
 
 type ResponseModel struct {
@@ -47,7 +48,7 @@ func (r ResponseModel) PageInfo(endpoint string) any {
 	return nil
 }
 
-/*func (r ResponseModel) EndpointX(name string) EndpointModel {
+func (r ResponseModel) EndpointAuth(name string) EndpointModel {
 	if r.Data != nil {
 		response := r.Data.(map[string]interface{})
 		if endpoint, ok := response[name]; ok {
@@ -62,7 +63,7 @@ func (r ResponseModel) PageInfo(endpoint string) any {
 	//TODO: throw exception
 	fmt.Println(apiError.ToString())
 	return EndpointModel{}
-}*/
+}
 
 func (r ResponseModel) Endpoint() interface{} {
 	var response = r.model

@@ -62,7 +62,7 @@ func (a *TokenAccessUserModel) Token() bool {
 	if !apiResponse.IsValid() {
 		apiResponse.ThrowException()
 	}
-	token := apiResponse.Endpoint("AclToken")
+	token := apiResponse.EndpointAuth("AclToken")
 
 	if !token.IsValid() {
 		token.ThrowException()

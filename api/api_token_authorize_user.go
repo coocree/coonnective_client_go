@@ -133,7 +133,7 @@ mutation AclAuthorize($input: AuthorizeInput!) {
 		apiResponse.ThrowException()
 	}
 
-	if authorize := apiResponse.Endpoint("AclAuthorize"); authorize.IsValid() {
+	if authorize := apiResponse.EndpointAuth("AclAuthorize"); authorize.IsValid() {
 		authorizeResult := authorize.Result.(map[string]interface{})
 		if authorizeResult["state"] == t.state {
 			t.code = authorizeResult["code"].(string)

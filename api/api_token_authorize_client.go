@@ -135,7 +135,7 @@ mutation AclAuthorize($input: AuthorizeInput!) {
 		apiResponse.ThrowException()
 	}
 
-	authorize := apiResponse.Endpoint("AclAuthorize")
+	authorize := apiResponse.EndpointAuth("AclAuthorize")
 	if !authorize.IsValid() {
 		authorize.ThrowException()
 	}

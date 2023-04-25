@@ -11,3 +11,7 @@
 
 ## 1.0.3
 * Corrigido conversaõ de tipo int32 / int64
+
+
+## 1.0.4
+* Implementado EndpointAuth
