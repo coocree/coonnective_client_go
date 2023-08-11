@@ -1,6 +1,8 @@
 package api
 
-import "strings"
+import (
+	"strings"
+)
 
 func Dao(graphQL string, variables map[string]interface{}, model interface{}) ResponseModel {
 	apiParams := Params(graphQL)
@@ -22,6 +24,7 @@ func Dao(graphQL string, variables map[string]interface{}, model interface{}) Re
 		responseModel.model = model
 		return responseModel
 	}
+
 	responseModel := apiConnect.Mutation(graphQL, variables)
 	responseModel.model = model
 	return responseModel

@@ -71,7 +71,7 @@ func (t *TokenAuthorizeClientModel) IsValid() bool {
 	jwToken := t.jwToken
 	if jwToken.Issuer() != "" && jwToken.Subject() == "auth_token" {
 		t.apiUri = jwToken.Issuer()
-		t.apiUri = "http://localhost:4600/api-connect"
+		t.apiUri = "http://localhost:4600/coonective"
 		t.clientId = jwToken.PrivateClaims()["cid"].(string)
 		t.context = jwToken.PrivateClaims()["ctx"].(string)
 		t.subject = jwToken.Subject()

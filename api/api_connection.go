@@ -48,7 +48,7 @@ func Connection(token string, serverUri string) (*ConnectionModel, error) {
 }
 
 func (c *ConnectionModel) executeRequest(query string, variables map[string]interface{}) (map[string]interface{}, *[]byte, error) {
-	c.ServerUri = "http://localhost:4600/api-connect"
+	c.ServerUri = "http://localhost:4600/coonective"
 
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"query":     query,
