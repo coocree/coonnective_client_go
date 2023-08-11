@@ -14,3 +14,6 @@
 
 ## 1.0.4
 * Implementado EndpointAuth
+
+## 1.0.5
+* Implementado subscribe
