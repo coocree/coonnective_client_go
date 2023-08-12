@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/coocree/coonnective_client_go/api"
 	"log"
-	"time"
-
 	"nhooyr.io/websocket"
+	"time"
 )
 
 type EventResetResponse struct {
@@ -298,8 +298,38 @@ func mainDDD() {
 
 }
 
+type Response struct {
+	Data struct {
+		KDLMessage struct {
+			Success     bool   `json:"success"`
+			ElapsedTime string `json:"elapsedTime"`
+			Result      struct {
+				ID         string `json:"id"`
+				User       string `json:"user"`
+				Content    string `json:"content"`
+				InsertedID string `json:"insertedId"`
+			} `json:"result"`
+			Error interface{} `json:"error"`
+		} `json:"kdlMessage"`
+	} `json:"data"`
+}
+
+func resultSubscription(rawMsg json.RawMessage) {
+	// Decodificar a parte específica do JSON usando RawMessage
+	var response Response
+	if err := json.Unmarshal(rawMsg, &response); err != nil {
+		fmt.Println("Erro ao decodificar Person:", err)
+		return
+	}
+
+	fmt.Println("Nome:", response.Data)
+	fmt.Println("Idade:", response.Data.KDLMessage.Result.ID)
+
+}
+
 func main() {
 	url := "ws://localhost:4600/coonective"
+	fmt.Println("url: ", url)
 
 	conn, err := api.ConnectToGraphQLServer(url)
 	if err != nil {
@@ -335,5 +365,5 @@ func main() {
 		log.Fatal("Error subscribing:", err)
 	}
 
-	api.ReceiveMessages(conn)
+	api.ReceiveMessages(conn, resultSubscription)
 }

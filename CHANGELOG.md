@@ -17,3 +17,6 @@
 
 ## 1.0.5
 * Implementado subscribe
+
+## 1.0.6
+* Implementado next em subscription ReceiveMessages

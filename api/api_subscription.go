@@ -52,7 +52,7 @@ func Subscribe(conn *websocket.Conn, subscription string) error {
 	return nil
 }
 
-func ReceiveMessages(conn *websocket.Conn) {
+func ReceiveMessages(conn *websocket.Conn, next func(payload json.RawMessage)) {
 	for {
 		var msg subscriptionMessage
 		err := wsjson.Read(context.Background(), conn, &msg)
@@ -62,9 +62,11 @@ func ReceiveMessages(conn *websocket.Conn) {
 		}
 
 		if msg.Type == "data" {
-			fmt.Println("Received data:", string(msg.Payload))
-		} else {
-			fmt.Println("Received message:", msg)
+			next(msg.Payload)
+			//fmt.Println("Received data:", string(msg.Payload))
 		}
+		/*else {
+			fmt.Println("Received message:", msg)
+		}*/
 	}
 }
