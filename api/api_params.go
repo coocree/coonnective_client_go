@@ -17,7 +17,15 @@ type ParamsModel struct {
 func Params(queryString string) ParamsModel {
 	queryString = strings.TrimSpace(queryString)
 	module := extractModule(queryString)
-	path := extractPath(queryString)
+	var path string
+	if module == "Query" {
+		path = extractPathQuery(queryString)
+	} else {
+		path = extractPathMutation(queryString)
+	}
+
+	fmt.Println("module: XXXXXXXXXXXXXXXXXXXXXXXXX", path)
+
 	return ParamsModel{Module: module, Path: path, queryString: queryString}
 }
 
@@ -69,6 +77,10 @@ func (m *ParamsModel) IsValid() *ErrorModel {
 		apiError := ApiError([]string{"Não foi encontrado definção de module"}, "apiParams", "isValid", "INVALID_MODULE", time.Now(), nil)
 		return &apiError
 	}
+
+	fmt.Println("m.Path: ", m.Path)
+	fmt.Println("m --->> ", m)
+
 	if strings.ToLower(m.Path) == "" {
 		apiError := ApiError([]string{"Não foi encontrado definção de path"}, "apiParams", "isValid", "INVALID_PATH", time.Now(), nil)
 		return &apiError
@@ -85,7 +97,17 @@ func extractModule(queryString string) string {
 	return ""
 }
 
-func extractPath(queryString string) string {
+func extractPathQuery(queryString string) string {
+	re := regexp.MustCompile(`query\s([a-zA-Z_]+)`)
+	match := re.FindStringSubmatch(queryString)
+	if len(match) > 1 {
+		operation := match[1]
+		return operation[:len(operation)-1]
+	}
+	return ""
+}
+
+func extractPathMutation(queryString string) string {
 	re := regexp.MustCompile(`([a-zA-Z_]+\()`)
 	match := re.FindStringSubmatch(queryString)
 	if len(match) > 1 {

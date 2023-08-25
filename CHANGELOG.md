@@ -20,3 +20,6 @@
 
 ## 1.0.6
 * Implementado next em subscription ReceiveMessages
+
+## 1.0.7
+* Corrigido erro na captura do identifcador de query ou mutation

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/coocree/coonnective_client_go/api"
+	"github.com/coocree/coonnective_client_go/coonective"
 	"log"
 	"nhooyr.io/websocket"
 	"time"
@@ -300,7 +301,7 @@ func mainDDD() {
 
 type Response struct {
 	Data struct {
-		KDLMessage struct {
+		DOOMessage struct {
 			Success     bool   `json:"success"`
 			ElapsedTime string `json:"elapsedTime"`
 			Result      struct {
@@ -310,7 +311,7 @@ type Response struct {
 				InsertedID string `json:"insertedId"`
 			} `json:"result"`
 			Error interface{} `json:"error"`
-		} `json:"kdlMessage"`
+		} `json:"dooMessage"`
 	} `json:"data"`
 }
 
@@ -323,11 +324,36 @@ func resultSubscription(rawMsg json.RawMessage) {
 	}
 
 	fmt.Println("Nome:", response.Data)
-	fmt.Println("Idade:", response.Data.KDLMessage.Result.ID)
+	fmt.Println("Idade:", response.Data.DOOMessage.Result.ID)
 
 }
 
 func main() {
+	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
+	//--------------------------------------------------------
+
+	token := "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiaHR0cDovLzE5Mi4xNjguMS4zNDo0NjAwIl0sImNudCI6InN1cG9ydGUtYXBpQGFlZ2lzLmFwcC5iciIsImNpZCI6IjYyYWU1YmI5YmI1NTI5MDAyZGJmOTliMSIsImNuYSI6IkNvcmRhIEx1ei1HZW9Qb2ludCIsImN0eCI6ImNsaWVudCIsImV4cCI6NDc2NTk5MzkxMywiaWF0IjoxNjU1NTkzOTEzLCJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjM0OjQ2MDAiLCJzY29wZSI6Im11dDphdXRob3JpemUiLCJzdWIiOiJhdXRoX3Rva2VuIiwidWlkIjoic2Q1YTI4ZmM4ZCIsInByaiI6ImJhcnJhLWRvLWNvcmRhIn0.JMXFPI_JD9OTe_8r3Hk-orL3fRJjsvWZkUpCTa7yZQA"
+	api.Connect(&token)
+
+	apiResponse := coonective.WkfEvents()
+	if !apiResponse.IsValid() {
+		apiResponse.ThrowException()
+	}
+
+	apiEndpoint := apiResponse.Endpoint().(*coonective.WkfEventsResponse)
+	wkfEvents := apiEndpoint.Data.WkfEvents
+
+	if wkfEvents.Success == false {
+		fmt.Println("hasConnection.Error", wkfEvents.Error)
+		return
+	}
+
+	fmt.Println("Result", wkfEvents.Result)
+
+	fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+}
+
+func mainXXX() {
 	url := "ws://localhost:4600/coonective"
 	fmt.Println("url: ", url)
 
@@ -338,8 +364,8 @@ func main() {
 	defer conn.Close(websocket.StatusNormalClosure, "")
 
 	subscription := `
-		subscription kdlMessage {
-    kdlMessage {
+		subscription dooMessage {
+    dooMessage {
         success
         elapsedTime
         result {
