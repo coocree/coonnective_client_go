@@ -3,77 +3,50 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 )
 
 type ResponseModel struct {
 	Success bool
 	Errors  []ErrorModel
 	Data    interface{}
-	body    []byte
-	model   interface{}
+	Body    []byte
 }
 
-func Response(success bool, errors []ErrorModel, data interface{}) ResponseModel {
-	return ResponseModel{Success: success, Errors: errors, Data: data}
-}
+/*
+token := apiResponse.EndpointMap("AclToken")
 
-func (r ResponseModel) Result(endpoint string) interface{} {
-	if r.Data != nil {
-		response := r.Data.(map[string]interface{})
-		if result, ok := response[endpoint]; ok {
-			return result.(map[string]interface{})["result"]
-		}
-	}
-	return nil
-}
-
-func (r ResponseModel) ResultError(endpoint string) interface{} {
-	if r.Data != nil {
-		response := r.Data.(map[string]interface{})
-		if result, ok := response[endpoint]; ok {
-			return result.(map[string]interface{})["error"]
-		}
-	}
-	return nil
-}
-
-func (r ResponseModel) PageInfo(endpoint string) any {
-	if r.Data != nil {
-		response := r.Data.(map[string]interface{})
-		if result, ok := response[endpoint]; ok {
-			return result.(map[string]interface{})["pageInfo"]
-		}
-	}
-	return nil
-}
-
-func (r ResponseModel) EndpointAuth(name string) EndpointModel {
-	if r.Data != nil {
-		response := r.Data.(map[string]interface{})
-		if endpoint, ok := response[name]; ok {
-			return Endpoint(endpoint)
-		}
+	if !token.IsValid() {
+		token.ThrowException()
 	}
 
-	apiError := ApiError([]string{"O endpoint '" + name + "' não foi encontrado no resultado da query/mutation de interação com a base de dados."}, "Response", "Response", "ENDPOINT_NOT_FOUND", time.Now(), r.Data)
-	E(apiError.ToString(), apiError.Code, nil)
-	//panic(apiError.Code)
+	tokenResult := token.Result.(map[string]interface{})
+	a.tokenType = tokenResult["tokenType"].(string)
+*/
 
-	//TODO: throw exception
-	fmt.Println(apiError.ToString())
-	return EndpointModel{}
+func (r ResponseModel) EndpointToMap(name any) map[string]interface{} {
+
+	var data map[string]interface{}
+	errJson := json.Unmarshal(r.Body, &data)
+	if errJson != nil {
+		fmt.Println("Mutation Error parsing JSON response: ", errJson)
+	}
+
+	if data != nil && name != nil {
+		response := data["data"].(map[string]interface{})
+		if endpoint, ok := response[name.(string)]; ok {
+			return endpoint.(map[string]interface{})
+		}
+	}
+	return data
 }
 
-func (r ResponseModel) Endpoint() interface{} {
-	var response = r.model
-	errJson := json.Unmarshal(r.body, &response)
+func (r ResponseModel) Endpoint(response interface{}) {
+	errJson := json.Unmarshal(r.Body, &response)
 	if errJson != nil {
 		fmt.Println("errJson: ", errJson)
 	}
-
-	return response
 }
+
 func (r ResponseModel) IsValid() bool {
 	return r.Success && len(r.Errors) == 0
 }

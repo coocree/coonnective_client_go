@@ -23,6 +23,22 @@ func TokenAccessUser(apiUserAuthorize TokenAuthorizeUserModel) *TokenAccessUserM
 	}
 }
 
+type AclTokenResponse struct {
+	Data struct {
+		AclToken struct {
+			Result struct {
+				AccessToken  string `bson:"accessToken,omitempty" json:"accessToken"`
+				ExpiresIn    string `bson:"expiresIn,omitempty" json:"expiresIn"`
+				RefreshToken string `bson:"refreshToken,omitempty" json:"refreshToken"`
+				TokenType    string `bson:"tokenType,omitempty" json:"tokenType"`
+			} `bson:"result,omitempty" json:"result"`
+			Error       ErrorModel
+			ElapsedTime string
+			Success     bool
+		}
+	}
+}
+
 func (a *TokenAccessUserModel) Token() bool {
 	apiConnection, _ := Connection(a.apiUserAuthorize.nonceToken, a.apiUserAuthorize.apiUri)
 
@@ -59,37 +75,34 @@ func (a *TokenAccessUserModel) Token() bool {
 	}
 
 	apiResponse := apiConnection.Mutation(params, variables)
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
-	}
-	token := apiResponse.EndpointAuth("AclToken")
 
-	if !token.IsValid() {
-		token.ThrowException()
-	}
+	var response AclTokenResponse
+	apiResponse.Endpoint(&response)
 
-	tokenResult := token.Result.(map[string]interface{})
-	a.tokenType = tokenResult["tokenType"].(string)
-	a.expiresIn = tokenResult["expiresIn"].(string)
-	a.accessToken = tokenResult["accessToken"].(string)
-	a.refreshToken = tokenResult["refreshToken"].(string)
-	a.isValid = true
-	a.user.AccessToken(a.accessToken)
-	a.user.RefreshToken(a.refreshToken)
+	if response.Data.AclToken.Success {
+		tokenResult := response.Data.AclToken.Result
+		a.tokenType = tokenResult.TokenType
+		a.expiresIn = tokenResult.ExpiresIn
+		a.accessToken = tokenResult.AccessToken
+		a.refreshToken = tokenResult.RefreshToken
+		a.isValid = true
+		a.user.AccessToken(a.accessToken)
+		a.user.RefreshToken(a.refreshToken)
 
-	jwToken, errJwt := jwt.Parse([]byte(a.accessToken))
-	if errJwt != nil {
-		apiError := ApiError([]string{"Token de acesso de usuário 'user' inválido.", errJwt.Error()},
-			"TokenAccessUser", "Token", "ACCESS_TOKEN_FAIL", time.Now(), token)
-		E(apiError.ToString(), apiError.Code, nil)
-		panic(apiError.Code)
-	}
+		jwToken, errJwt := jwt.Parse([]byte(a.accessToken))
+		if errJwt != nil {
+			apiError := ApiError([]string{"Token de acesso de usuário 'user' inválido.", errJwt.Error()},
+				"TokenAccessUser", "Token", "ACCESS_TOKEN_FAIL", time.Now(), variables)
+			E(apiError.ToString(), apiError.Code, nil)
+			panic(apiError.Code)
+		}
 
-	iss := jwToken.Issuer()
-	if iss != "" {
-		a.user.ServerUri(iss)
-	} else {
-		return false
+		iss := jwToken.Issuer()
+		if iss != "" {
+			a.user.ServerUri(iss)
+		} else {
+			return false
+		}
 	}
 
 	return a.isValid

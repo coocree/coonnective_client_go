@@ -97,6 +97,21 @@ func (t *TokenAuthorizeClientModel) Ready() bool {
 	return false
 }
 
+type AclAuthorizeResponse struct {
+	Data struct {
+		AclAuthorize struct {
+			Result struct {
+				Code       string `bson:"code,omitempty" json:"code"`
+				NonceToken string `bson:"nonceToken,omitempty" json:"nonceToken"`
+				State      string `bson:"state,omitempty" json:"state"`
+			} `bson:"result,omitempty" json:"result"`
+			Error       ErrorModel
+			ElapsedTime string
+			Success     bool
+		}
+	}
+}
+
 func (t *TokenAuthorizeClientModel) AclAuthorize() *ErrorModel {
 	apiConnection, _ := Connection(t.token, t.apiUri)
 	const params = `
@@ -131,19 +146,14 @@ mutation AclAuthorize($input: AuthorizeInput!) {
 	}
 
 	apiResponse := apiConnection.Mutation(params, variables)
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
-	}
 
-	authorize := apiResponse.EndpointAuth("AclAuthorize")
-	if !authorize.IsValid() {
-		authorize.ThrowException()
-	}
+	var response AclAuthorizeResponse
+	apiResponse.Endpoint(&response)
 
-	authorizeResult := authorize.Result.(map[string]interface{})
-	if authorizeResult["state"] == t.state {
-		t.code = authorizeResult["code"].(string)
-		t.nonceToken = authorizeResult["nonceToken"].(string)
+	authorizeResult := response.Data.AclAuthorize.Result
+	if authorizeResult.State == t.state {
+		t.code = authorizeResult.Code
+		t.nonceToken = authorizeResult.NonceToken
 		return nil
 	}
 	return nil

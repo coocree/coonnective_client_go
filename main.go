@@ -47,7 +47,8 @@ mutation EventReset(input: EventResetInput!) {
 	}
 }
 `
-	return api.Dao(graphQL, variables, &EventResetResponse{})
+	//return api.Dao(graphQL, variables, &EventResetResponse{})
+	return api.Dao(graphQL, variables)
 }
 
 func mainXXXX() {
@@ -56,17 +57,16 @@ func mainXXXX() {
 	api.Connect(&token)
 
 	apiResponse := EventReset()
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
-	}
-	apiEndpoint := apiResponse.Endpoint().(*EventResetResponse)
-	dooSimucCreate := apiEndpoint.Data.DooSimucCreate
+	//apiEndpoint := apiResponse.Endpoint().(*EventResetResponse)
+	var response EventResetResponse
+	apiResponse.Endpoint(&response)
+	/*dooSimucCreate := apiEndpoint.Data.DooSimucCreate
 
 	if !dooSimucCreate.Success {
 		fmt.Println(dooSimucCreate.Error.Messages)
 	}
 
-	fmt.Println(dooSimucCreate.Result)
+	fmt.Println(dooSimucCreate.Result)*/
 }
 
 type DooSimucCreateResponse struct {
@@ -109,7 +109,8 @@ mutation DooSimucCreate($input: DooSimucCreateInput!) {
 }
 `
 
-	return api.Dao(graphQL, variables, &DooSimucCreateResponse{})
+	//return api.Dao(graphQL, variables, &DooSimucCreateResponse{})
+	return api.Dao(graphQL, variables)
 }
 
 type PostMessageRespose struct {
@@ -131,7 +132,8 @@ mutation MyMutation {
 }
 `
 
-	return api.Dao(graphQL, variables, &DooSimucCreateResponse{})
+	//return api.Dao(graphQL, variables, &DooSimucCreateResponse{})
+	return api.Dao(graphQL, variables)
 }
 
 type KdlSimconHasConnectionResponse struct {
@@ -168,7 +170,8 @@ query KdlSimconHasConnection($filter: KdlSimconHasConnectionFilter!) {
   }
 }
 `
-	return api.Dao(graphQL, variables, &KdlSimconHasConnectionResponse{})
+	//return api.Dao(graphQL, variables, &KdlSimconHasConnectionResponse{})
+	return api.Dao(graphQL, variables)
 }
 
 type KdlCustomerResponse struct {
@@ -235,7 +238,8 @@ query kdlCustomer($filter: KdlCustomerFilter!) {
   }
 }
 `
-	return api.Dao(graphQL, variables, &KdlCustomerResponse{})
+	//return api.Dao(graphQL, variables, &KdlCustomerResponse{})
+	return api.Dao(graphQL, variables)
 }
 
 func mainDDD() {
@@ -244,12 +248,11 @@ func mainDDD() {
 	api.Connect(&token)
 
 	apiResponse := KdlCustomer()
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
-	}
 
-	apiEndpoint := apiResponse.Endpoint().(*KdlCustomerResponse)
-	kdlCustomer := apiEndpoint.Data.KdlCustomer
+	//apiEndpoint := apiResponse.Endpoint().(*KdlCustomerResponse)
+	var response KdlCustomerResponse
+	apiResponse.Endpoint(&response)
+	/*kdlCustomer := apiEndpoint.Data.KdlCustomer
 
 	if kdlCustomer.Success == false {
 		fmt.Println("hasConnection.Error", kdlCustomer.Error)
@@ -260,7 +263,7 @@ func mainDDD() {
 
 	fmt.Println("ElapsedTime", kdlCustomer.ElapsedTime)
 	fmt.Println("Success", kdlCustomer.Success)
-	fmt.Println("Error", kdlCustomer.Error)
+	fmt.Println("Error", kdlCustomer.Error)*/
 
 	/*apiResponse := KdlSimconHasConnection()
 	if !apiResponse.IsValid() {
@@ -328,7 +331,7 @@ func resultSubscription(rawMsg json.RawMessage) {
 
 }
 
-func main() {
+func mainWSA() {
 	fmt.Println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
 	//--------------------------------------------------------
 
@@ -336,21 +339,27 @@ func main() {
 	api.Connect(&token)
 
 	apiResponse := coonective.WkfEvents()
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
-	}
 
-	apiEndpoint := apiResponse.Endpoint().(*coonective.WkfEventsResponse)
-	wkfEvents := apiEndpoint.Data.WkfEvents
+	//apiEndpoint := apiResponse.Endpoint().(*coonective.WkfEventsResponse)
+	var response coonective.WkfEventsResponse
+	apiResponse.Endpoint(&response)
+	/*wkfEvents := apiEndpoint.Data.WkfEvents
 
 	if wkfEvents.Success == false {
 		fmt.Println("hasConnection.Error", wkfEvents.Error)
 		return
 	}
 
-	fmt.Println("Result", wkfEvents.Result)
+	fmt.Println("Result--->>>", wkfEvents.Result)
 
-	fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
+	for _, result := range wkfEvents.Result {
+		fmt.Println("Result--->>>", result.Workers)
+		for _, worker := range result.Workers {
+			fmt.Println("Result--->>>", worker)
+		}
+	}
+
+	fmt.Println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")*/
 }
 
 func mainXXX() {
@@ -392,4 +401,22 @@ func mainXXX() {
 	}
 
 	api.ReceiveMessages(conn, resultSubscription)
+}
+
+func main() {
+	token := "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiaHR0cDovLzE5Mi4xNjguMS4zNDo0NjAwIl0sImNudCI6InN1cG9ydGUtYXBpQGFlZ2lzLmFwcC5iciIsImNpZCI6IjYyYWU1YmI5YmI1NTI5MDAyZGJmOTliMSIsImNuYSI6IkNvcmRhIEx1ei1HZW9Qb2ludCIsImN0eCI6ImNsaWVudCIsImV4cCI6NDc2NTk5MzkxMywiaWF0IjoxNjU1NTkzOTEzLCJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjM0OjQ2MDAiLCJzY29wZSI6Im11dDphdXRob3JpemUiLCJzdWIiOiJhdXRoX3Rva2VuIiwidWlkIjoic2Q1YTI4ZmM4ZCIsInByaiI6ImJhcnJhLWRvLWNvcmRhIn0.JMXFPI_JD9OTe_8r3Hk-orL3fRJjsvWZkUpCTa7yZQA"
+	api.Connect(&token)
+
+	fmt.Println("")
+	// Envie a consulta para a API GraphQL
+	coonective.KdlSimconsExec()
+
+	/*if !apiResponse.IsValid() {
+		apiResponse.ThrowException()
+	}
+
+	// Resultado da consulta
+	apiEndpoint := apiResponse.Endpoint().(*coonective.KdlHasConnectionFase1Response)
+	wkfEvents := apiEndpoint.Data.KdlHasConnectionFase1
+	fmt.Println(wkfEvents.Result.IdLine)*/
 }

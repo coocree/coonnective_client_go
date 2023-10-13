@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func Dao(graphQL string, variables map[string]interface{}, model interface{}) ResponseModel {
+func Dao(graphQL string, variables map[string]interface{}) ResponseModel {
 	apiParams := Params(graphQL)
 	if errParams := apiParams.IsValid(); errParams != nil {
 		return ResponseModel{
@@ -15,17 +15,14 @@ func Dao(graphQL string, variables map[string]interface{}, model interface{}) Re
 	apiConnect, errConnect := Connect(nil)
 	if errConnect != nil {
 		return ResponseModel{
-			Errors: []ErrorModel{*errConnect},
+			Success: false,
+			Errors:  []ErrorModel{*errConnect},
 		}
 	}
 
 	if strings.ToLower(apiParams.Module) == "query" {
-		responseModel := apiConnect.Query(graphQL, variables)
-		responseModel.model = model
-		return responseModel
+		return apiConnect.Query(graphQL, variables)
 	}
 
-	responseModel := apiConnect.Mutation(graphQL, variables)
-	responseModel.model = model
-	return responseModel
+	return apiConnect.Mutation(graphQL, variables)
 }

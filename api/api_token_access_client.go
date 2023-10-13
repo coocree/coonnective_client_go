@@ -61,23 +61,18 @@ func (a *TokenAccessClientModel) Token() string {
 	}
 
 	apiResponse := apiConnection.Mutation(params, variables)
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
+	var response AclTokenResponse
+	apiResponse.Endpoint(&response)
+
+	if response.Data.AclToken.Success {
+		tokenResult := response.Data.AclToken.Result
+		a.tokenType = tokenResult.TokenType
+		a.expiresIn = tokenResult.ExpiresIn
+		a.accessToken = tokenResult.AccessToken
+		a.refreshToken = tokenResult.RefreshToken
+		a.user.AccessToken(a.accessToken)
+		a.user.RefreshToken(a.refreshToken)
 	}
-
-	token := apiResponse.EndpointAuth("AclToken")
-	if !token.IsValid() {
-		token.ThrowException()
-	}
-
-	tokenResult := token.Result.(map[string]interface{})
-	a.tokenType = tokenResult["tokenType"].(string)
-	a.expiresIn = tokenResult["expiresIn"].(string)
-	a.accessToken = tokenResult["accessToken"].(string)
-	a.refreshToken = tokenResult["refreshToken"].(string)
-
-	a.user.AccessToken(a.accessToken)
-	a.user.RefreshToken(a.refreshToken)
 
 	return a.accessToken
 }

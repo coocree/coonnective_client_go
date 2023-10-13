@@ -23,3 +23,6 @@
 
 ## 1.0.7
 * Corrigido erro na captura do identifcador de query ou mutation
+
+## 1.0.8
+* Implementado EndpointToMap

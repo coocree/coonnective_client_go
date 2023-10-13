@@ -26,21 +26,23 @@ type WkfEventWorkerResult struct {
 	Steps  []*WkfEventStepResult `bson:"steps,omitempty" json:"steps"`
 }
 
+type Result struct {
+	ID              string                  `bson:"_id,omitempty" json:"_id"`
+	Status          string                  `bson:"status,omitempty" json:"status"`
+	CreatedAt       time.Time               `bson:"createdAt,omitempty" json:"createdAt"`
+	ChangedAt       time.Time               `bson:"changedAt,omitempty" json:"changedAt"`
+	NextAt          time.Time               `bson:"nextAt,omitempty" json:"nextAt"`
+	Type            string                  `bson:"type,omitempty" json:"type"`
+	NumInteractions int                     `bson:"numInteractions,omitempty" json:"numInteractions"`
+	Workers         []*WkfEventWorkerResult `bson:"workers,omitempty" json:"workers"`
+	EventFailed     *string                 `bson:"eventFailed,omitempty" json:"eventFailed"`
+	Erros           []*string               `bson:"erros,omitempty" json:"erros"`
+}
+
 type WkfEventsResponse struct {
 	Data struct {
 		WkfEvents struct {
-			Result struct {
-				ID              string                  `bson:"_id,omitempty" json:"_id"`
-				Status          string                  `bson:"status,omitempty" json:"status"`
-				CreatedAt       time.Time               `bson:"createdAt,omitempty" json:"createdAt"`
-				ChangedAt       time.Time               `bson:"changedAt,omitempty" json:"changedAt"`
-				NextAt          time.Time               `bson:"nextAt,omitempty" json:"nextAt"`
-				Type            string                  `bson:"type,omitempty" json:"type"`
-				NumInteractions int                     `bson:"numInteractions,omitempty" json:"numInteractions"`
-				Workers         []*WkfEventWorkerResult `bson:"workers,omitempty" json:"workers"`
-				EventFailed     *string                 `bson:"eventFailed,omitempty" json:"eventFailed"`
-				Erros           []*string               `bson:"erros,omitempty" json:"erros"`
-			}
+			Result      []Result `bson:"result,omitempty" json:"result"`
 			Error       api.ErrorModel
 			ElapsedTime string
 			Success     bool
@@ -90,5 +92,5 @@ query wkfEvents {
   }
 }
 `
-	return api.Dao(graphQL, variables, &WkfEventsResponse{})
+	return api.Dao(graphQL, variables)
 }

@@ -129,19 +129,21 @@ mutation AclAuthorize($input: AuthorizeInput!) {
 	}
 
 	apiResponse := apiConnection.Mutation(params, variables)
-	if !apiResponse.IsValid() {
-		apiResponse.ThrowException()
-	}
 
-	if authorize := apiResponse.EndpointAuth("AclAuthorize"); authorize.IsValid() {
-		authorizeResult := authorize.Result.(map[string]interface{})
-		if authorizeResult["state"] == t.state {
-			t.code = authorizeResult["code"].(string)
-			t.nonceToken = authorizeResult["nonceToken"].(string)
+	var response AclAuthorizeResponse
+	apiResponse.Endpoint(&response)
+
+	authorizeResult := response.Data.AclAuthorize.Result
+
+	if response.Data.AclAuthorize.Success {
+		if authorizeResult.State == t.state {
+			t.code = authorizeResult.Code
+			t.nonceToken = authorizeResult.NonceToken
 			return true
 		}
 	} else {
-		authorize.ThrowException()
+		//TODO: Tratar erro de autorização
+		//response.Data.AclAuthorize.ThrowException()
 	}
 
 	return false

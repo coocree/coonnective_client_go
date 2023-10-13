@@ -24,8 +24,6 @@ func Params(queryString string) ParamsModel {
 		path = extractPathMutation(queryString)
 	}
 
-	fmt.Println("module: XXXXXXXXXXXXXXXXXXXXXXXXX", path)
-
 	return ParamsModel{Module: module, Path: path, queryString: queryString}
 }
 
@@ -77,9 +75,6 @@ func (m *ParamsModel) IsValid() *ErrorModel {
 		apiError := ApiError([]string{"Não foi encontrado definção de module"}, "apiParams", "isValid", "INVALID_MODULE", time.Now(), nil)
 		return &apiError
 	}
-
-	fmt.Println("m.Path: ", m.Path)
-	fmt.Println("m --->> ", m)
 
 	if strings.ToLower(m.Path) == "" {
 		apiError := ApiError([]string{"Não foi encontrado definção de path"}, "apiParams", "isValid", "INVALID_PATH", time.Now(), nil)
