@@ -103,7 +103,7 @@ func extractPathQuery(queryString string) string {
 }
 
 func extractPathMutation(queryString string) string {
-	re := regexp.MustCompile(`([a-zA-Z_]+\()`)
+	re := regexp.MustCompile(`mutation\s([a-zA-Z_]+)`)
 	match := re.FindStringSubmatch(queryString)
 	if len(match) > 1 {
 		operation := match[1]

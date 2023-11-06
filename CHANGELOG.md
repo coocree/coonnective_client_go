@@ -26,3 +26,6 @@
 
 ## 1.0.8
 * Implementado EndpointToMap
+
+## 1.0.9
+* Atualizado ApiParams extractPathMutation
