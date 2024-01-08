@@ -41,8 +41,8 @@ query kdlSimcons($kdlSimconsFilter: KdlSimconsFilter!, $kdlSimconsTotalFilter: K
     result {
       icon
       idSimcon
-      latitude
-      longitude
+      lat
+      lng
     }
     success
     elapsedTime

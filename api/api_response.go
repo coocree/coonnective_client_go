@@ -12,17 +12,6 @@ type ResponseModel struct {
 	Body    []byte
 }
 
-/*
-token := apiResponse.EndpointMap("AclToken")
-
-	if !token.IsValid() {
-		token.ThrowException()
-	}
-
-	tokenResult := token.Result.(map[string]interface{})
-	a.tokenType = tokenResult["tokenType"].(string)
-*/
-
 func (r ResponseModel) EndpointToMap(name any) map[string]interface{} {
 
 	var data map[string]interface{}
@@ -30,6 +19,8 @@ func (r ResponseModel) EndpointToMap(name any) map[string]interface{} {
 	if errJson != nil {
 		fmt.Println("Mutation Error parsing JSON response: ", errJson)
 	}
+
+	fmt.Println("data: --->>>", data)
 
 	if data != nil && name != nil {
 		response := data["data"].(map[string]interface{})

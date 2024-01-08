@@ -407,7 +407,7 @@ func main() {
 	token := "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOlsiaHR0cDovLzE5Mi4xNjguMS4zNDo0NjAwIl0sImNudCI6InN1cG9ydGUtYXBpQGFlZ2lzLmFwcC5iciIsImNpZCI6IjYyYWU1YmI5YmI1NTI5MDAyZGJmOTliMSIsImNuYSI6IkNvcmRhIEx1ei1HZW9Qb2ludCIsImN0eCI6ImNsaWVudCIsImV4cCI6NDc2NTk5MzkxMywiaWF0IjoxNjU1NTkzOTEzLCJpc3MiOiJodHRwOi8vMTkyLjE2OC4xLjM0OjQ2MDAiLCJzY29wZSI6Im11dDphdXRob3JpemUiLCJzdWIiOiJhdXRoX3Rva2VuIiwidWlkIjoic2Q1YTI4ZmM4ZCIsInByaiI6ImJhcnJhLWRvLWNvcmRhIn0.JMXFPI_JD9OTe_8r3Hk-orL3fRJjsvWZkUpCTa7yZQA"
 	api.Connect(&token)
 
-	fmt.Println("")
+	fmt.Println("xxxxx")
 	// Envie a consulta para a API GraphQL
 	coonective.KdlSimconsExec()
 

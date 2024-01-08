@@ -29,8 +29,8 @@ func (a *TokenAccessClientModel) Token() string {
 	apiConnection, _ := Connection(a.apiClientAuthorize.nonceToken, a.apiClientAuthorize.apiUri)
 
 	const params = `
-        mutation AclToken($input: TokenInput!) {
-            AclToken(input: $input) {
+        mutation aclToken($input: TokenInput!) {
+            aclToken(input: $input) {
                 result {
                     accessToken
                     expiresIn

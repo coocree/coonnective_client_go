@@ -29,3 +29,6 @@
 
 ## 1.0.9
 * Atualizado ApiParams extractPathMutation
+
+## 1.0.10
+* Atualizado identificadores de autenticação

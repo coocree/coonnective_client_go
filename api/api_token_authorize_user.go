@@ -92,8 +92,8 @@ func (t *TokenAuthorizeUserModel) Authorize() bool {
 	apiConnection, _ := Connection(t.token, t.apiUri)
 
 	params := `
-mutation AclAuthorize($input: AuthorizeInput!) {
-	AclAuthorize(input: $input) {
+mutation aclAuthorize($input: AuthorizeInput!) {
+	aclAuthorize(input: $input) {
 		result {
 			code
 			nonceToken

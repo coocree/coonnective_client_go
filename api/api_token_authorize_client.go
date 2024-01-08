@@ -115,8 +115,8 @@ type AclAuthorizeResponse struct {
 func (t *TokenAuthorizeClientModel) AclAuthorize() *ErrorModel {
 	apiConnection, _ := Connection(t.token, t.apiUri)
 	const params = `
-mutation AclAuthorize($input: AuthorizeInput!) {
-  AclAuthorize(input: $input) {
+mutation aclAuthorize($input: AuthorizeInput!) {
+  aclAuthorize(input: $input) {
     result {
       code
       nonceToken

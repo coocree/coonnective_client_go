@@ -43,8 +43,8 @@ func (a *TokenAccessUserModel) Token() bool {
 	apiConnection, _ := Connection(a.apiUserAuthorize.nonceToken, a.apiUserAuthorize.apiUri)
 
 	const params = `
-        mutation AclToken($input: TokenInput!) {
-            AclToken(input: $input) {
+        mutation aclToken($input: TokenInput!) {
+            aclToken(input: $input) {
                 result {
                     accessToken
                     expiresIn
