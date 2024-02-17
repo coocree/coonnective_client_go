@@ -32,3 +32,6 @@
 
 ## 1.0.10
 * Atualizado identificadores de autenticação
+
+## 1.0.11
+* Atualização para teste de erro 
